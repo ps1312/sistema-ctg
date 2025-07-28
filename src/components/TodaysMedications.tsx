@@ -2,6 +2,7 @@ import { useMutation } from 'convex/react'
 import { api } from '../../convex/_generated/api'
 import { toast } from 'sonner'
 import { Id } from '../../convex/_generated/dataModel'
+import { useState } from 'react'
 
 interface Medication {
   _id: Id<'medicationRecords'>
@@ -29,6 +30,40 @@ interface TodaysMedicationsProps {
 }
 
 export function TodaysMedications({ medications }: TodaysMedicationsProps) {
+  const getCurrentHour = () => {
+    const now = new Date()
+    return now.getHours()
+  }
+
+  const shouldCollapseSection = (timeString: string) => {
+    const currentHour = getCurrentHour()
+    const [hours] = timeString.split(':')
+    const sectionHour = parseInt(hours, 10)
+    return sectionHour < currentHour
+  }
+
+  const getInitialCollapsedState = () => {
+    const groupedMedications = medications.reduce(
+      (groups, medication) => {
+        const time = medication.horario
+        if (!groups[time]) {
+          groups[time] = []
+        }
+        groups[time].push(medication)
+        return groups
+      },
+      {} as Record<string, Medication[]>
+    )
+
+    const initialState: Record<string, boolean> = {}
+    Object.keys(groupedMedications).forEach(time => {
+      initialState[time] = shouldCollapseSection(time)
+    })
+    return initialState
+  }
+
+  const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>(getInitialCollapsedState)
+  
   const markAsAdministered = useMutation(
     api.medications.markMedicationAsAdministered
   )
@@ -58,6 +93,13 @@ export function TodaysMedications({ medications }: TodaysMedicationsProps) {
       toast.error('Erro ao desfazer administração')
       console.error(error)
     }
+  }
+
+  const toggleSection = (time: string) => {
+    setCollapsedSections(prev => ({
+      ...prev,
+      [time]: !prev[time]
+    }))
   }
 
   // Group medications by time
@@ -94,13 +136,59 @@ export function TodaysMedications({ medications }: TodaysMedicationsProps) {
         <div className="rounded-lg shadow-sm border">
           {sortedTimes.map((time, index) => (
             <div key={time}>
-              {/* Time Header */}
-              <div className="bg-gray-50 px-6 py-3 border-b">
+              <button
+                onClick={() => toggleSection(time)}
+                className="w-full bg-gray-50 px-6 py-3 border-b hover:bg-gray-100 transition-colors text-left flex items-center justify-between"
+              >
                 <h3 className="text-lg font-semibold text-gray-900">{time}</h3>
-              </div>
+                <div className="flex items-center gap-3">
+                  {(() => {
+                    const totalMeds = groupedMedications[time].length
+                    const administeredMeds = groupedMedications[time].filter(med => med.administrado).length
+                    const isComplete = administeredMeds === totalMeds
+                    const isPastSection = shouldCollapseSection(time)
+                    
+                    return (
+                      <>
+                        {isPastSection && (
+                          <span className="text-xs font-medium text-red-600">
+                            Atenção!
+                          </span>
+                        )}
+                        <span
+                          className={`px-2 py-1 text-xs font-medium rounded-full ${
+                            isPastSection
+                              ? 'bg-red-100 text-red-800'
+                              : isComplete
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-orange-100 text-orange-800'
+                          }`}
+                        >
+                          {administeredMeds}/{totalMeds}
+                        </span>
+                      </>
+                    )
+                  })()}
+                  <svg
+                  className={`w-5 h-5 text-gray-500 transition-transform ${
+                    collapsedSections[time] ? 'rotate-180' : ''
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                  </svg>
+                </div>
+              </button>
 
-              {/* Medications for this time */}
-              <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {!collapsedSections[time] && (
+                <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {groupedMedications[time].map((medication) => (
                   <div
                     key={medication._id}
@@ -166,7 +254,7 @@ export function TodaysMedications({ medications }: TodaysMedicationsProps) {
                   </div>
                 ))}
               </div>
-
+              )}
               {/* Divider between time sections (except for the last one) */}
               {index < sortedTimes.length - 1 && (
                 <div className="border-b border-gray-200"></div>
