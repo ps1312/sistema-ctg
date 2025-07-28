@@ -11,6 +11,10 @@ export const addAnimal = mutation({
     nomeTutor: v.string(),
     tratamentoPara: v.string(),
     tratamento: v.string(),
+    fiv: v.boolean(),
+    felv: v.boolean(),
+    raiva: v.boolean(),
+    v6: v.boolean(),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -68,6 +72,10 @@ export const updateAnimal = mutation({
     nomeTutor: v.string(),
     tratamentoPara: v.string(),
     tratamento: v.string(),
+    fiv: v.boolean(),
+    felv: v.boolean(),
+    raiva: v.boolean(),
+    v6: v.boolean(),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);

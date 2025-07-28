@@ -4,6 +4,7 @@ import { api } from '../../convex/_generated/api'
 import { Id } from '../../convex/_generated/dataModel'
 import { toast } from 'sonner'
 import { AddMedicationForm } from './AddMedicationForm'
+import { HealthStatus } from './health-status'
 
 interface AnimalDetailsProps {
   animalId: Id<'animals'>
@@ -21,6 +22,10 @@ export function AnimalDetails({ animalId, onBack }: AnimalDetailsProps) {
     nomeTutor: '',
     tratamentoPara: '',
     tratamento: '',
+    fiv: false,
+    felv: false,
+    raiva: false,
+    v6: false,
   })
 
   const animal = useQuery(api.animals.getAnimal, { id: animalId })
@@ -53,6 +58,10 @@ export function AnimalDetails({ animalId, onBack }: AnimalDetailsProps) {
       nomeTutor: animal.nomeTutor,
       tratamentoPara: animal.tratamentoPara,
       tratamento: animal.tratamento,
+      fiv: (animal as any).fiv || false,
+      felv: (animal as any).felv || false,
+      raiva: (animal as any).raiva || false,
+      v6: (animal as any).v6 || false,
     })
     setEditMode(true)
   }
@@ -90,8 +99,11 @@ export function AnimalDetails({ animalId, onBack }: AnimalDetailsProps) {
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
   ) => {
-    const { name, value } = e.target
-    setEditData((prev) => ({ ...prev, [name]: value }))
+    const { name, value, type, checked } = e.target as HTMLInputElement
+    setEditData((prev) => ({ 
+      ...prev, 
+      [name]: type === 'checkbox' ? checked : value 
+    }))
   }
 
   return (
@@ -239,6 +251,17 @@ export function AnimalDetails({ animalId, onBack }: AnimalDetailsProps) {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+              
+              <HealthStatus
+                data={{
+                  fiv: editData.fiv,
+                  felv: editData.felv,
+                  raiva: editData.raiva,
+                  v6: editData.v6
+                }}
+                editMode={true}
+                onChange={handleChange}
+              />
             </div>
           ) : (
             <div className="space-y-4">
@@ -284,6 +307,16 @@ export function AnimalDetails({ animalId, onBack }: AnimalDetailsProps) {
                 <span className="font-medium text-gray-700">Tratamento:</span>
                 <p className="text-gray-600 mt-1">{animal.tratamento}</p>
               </div>
+              
+              <HealthStatus
+                data={{
+                  fiv: (animal as any).fiv || false,
+                  felv: (animal as any).felv || false,
+                  raiva: (animal as any).raiva || false,
+                  v6: (animal as any).v6 || false
+                }}
+                editMode={false}
+              />
             </div>
           )}
         </div>

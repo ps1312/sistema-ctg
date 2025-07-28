@@ -1,67 +1,94 @@
-import { useState } from "react";
-import { useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { toast } from "sonner";
+import { useState } from 'react'
+import { useMutation } from 'convex/react'
+import { api } from '../../convex/_generated/api'
+import { toast } from 'sonner'
+import { HealthStatus } from './health-status'
 
 interface AddAnimalFormProps {
-  onSuccess: () => void;
+  onSuccess: () => void
 }
 
 export function AddAnimalForm({ onSuccess }: AddAnimalFormProps) {
   const [formData, setFormData] = useState({
-    nome: "",
-    sexo: "Macho" as "Macho" | "Fêmea",
-    pelagem: "",
-    idade: "",
-    nomeTutor: "",
-    tratamentoPara: "",
-    tratamento: "",
-  });
+    nome: '',
+    sexo: 'Macho' as 'Macho' | 'Fêmea',
+    pelagem: '',
+    idade: '',
+    nomeTutor: '',
+    tratamentoPara: '',
+    tratamento: '',
+    fiv: false,
+    felv: false,
+    raiva: false,
+    v6: false,
+  })
 
-  const addAnimal = useMutation(api.animals.addAnimal);
+  const addAnimal = useMutation(api.animals.addAnimal)
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!formData.nome.trim() || !formData.pelagem.trim() || !formData.idade.trim() || 
-        !formData.nomeTutor.trim() || !formData.tratamentoPara.trim() || !formData.tratamento.trim()) {
-      toast.error("Por favor, preencha todos os campos obrigatórios");
-      return;
+    e.preventDefault()
+
+    if (
+      !formData.nome.trim() ||
+      !formData.pelagem.trim() ||
+      !formData.idade.trim() ||
+      !formData.nomeTutor.trim() ||
+      !formData.tratamentoPara.trim() ||
+      !formData.tratamento.trim()
+    ) {
+      toast.error('Por favor, preencha todos os campos obrigatórios')
+      return
     }
 
     try {
-      await addAnimal(formData);
-      toast.success("Animal adicionado com sucesso!");
+      await addAnimal(formData)
+      toast.success('Animal adicionado com sucesso!')
       setFormData({
-        nome: "",
-        sexo: "Macho",
-        pelagem: "",
-        idade: "",
-        nomeTutor: "",
-        tratamentoPara: "",
-        tratamento: "",
-      });
-      onSuccess();
+        nome: '',
+        sexo: 'Macho',
+        pelagem: '',
+        idade: '',
+        nomeTutor: '',
+        tratamentoPara: '',
+        tratamento: '',
+        fiv: false,
+        felv: false,
+        raiva: false,
+        v6: false,
+      })
+      onSuccess()
     } catch (error) {
-      toast.error("Erro ao adicionar animal");
-      console.error(error);
+      toast.error('Erro ao adicionar animal')
+      console.error(error)
     }
-  };
+  }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
+    const { name, value, type, checked } = e.target as HTMLInputElement
+    setFormData((prev) => ({ 
+      ...prev, 
+      [name]: type === 'checkbox' ? checked : value 
+    }))
+  }
 
   return (
     <div className="max-w-2xl mx-auto">
       <div className="bg-white rounded-lg shadow-sm border p-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Adicionar Novo Animal</h2>
-        
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">
+          Adicionar Novo Animal
+        </h2>
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="nome" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="nome"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 NOME *
               </label>
               <input
@@ -76,7 +103,10 @@ export function AddAnimalForm({ onSuccess }: AddAnimalFormProps) {
             </div>
 
             <div>
-              <label htmlFor="sexo" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="sexo"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 SEXO *
               </label>
               <select
@@ -93,7 +123,10 @@ export function AddAnimalForm({ onSuccess }: AddAnimalFormProps) {
             </div>
 
             <div>
-              <label htmlFor="pelagem" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="pelagem"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 PELAGEM *
               </label>
               <input
@@ -108,7 +141,10 @@ export function AddAnimalForm({ onSuccess }: AddAnimalFormProps) {
             </div>
 
             <div>
-              <label htmlFor="idade" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="idade"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 IDADE *
               </label>
               <input
@@ -124,7 +160,10 @@ export function AddAnimalForm({ onSuccess }: AddAnimalFormProps) {
             </div>
 
             <div className="md:col-span-2">
-              <label htmlFor="nomeTutor" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="nomeTutor"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 NOME DO TUTOR *
               </label>
               <input
@@ -139,7 +178,10 @@ export function AddAnimalForm({ onSuccess }: AddAnimalFormProps) {
             </div>
 
             <div className="md:col-span-2">
-              <label htmlFor="tratamentoPara" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="tratamentoPara"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 TRATAMENTO PARA *
               </label>
               <textarea
@@ -154,7 +196,10 @@ export function AddAnimalForm({ onSuccess }: AddAnimalFormProps) {
             </div>
 
             <div className="md:col-span-2">
-              <label htmlFor="tratamento" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="tratamento"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 TRATAMENTO *
               </label>
               <textarea
@@ -165,6 +210,20 @@ export function AddAnimalForm({ onSuccess }: AddAnimalFormProps) {
                 rows={4}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
+              />
+            </div>
+
+            <div className="md:col-span-2">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Status de Saúde</h3>
+              <HealthStatus
+                data={{
+                  fiv: formData.fiv,
+                  felv: formData.felv,
+                  raiva: formData.raiva,
+                  v6: formData.v6
+                }}
+                editMode={true}
+                onChange={handleChange}
               />
             </div>
           </div>
@@ -180,5 +239,5 @@ export function AddAnimalForm({ onSuccess }: AddAnimalFormProps) {
         </form>
       </div>
     </div>
-  );
+  )
 }

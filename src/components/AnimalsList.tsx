@@ -1,4 +1,5 @@
 import { Id } from "../../convex/_generated/dataModel";
+import { HealthStatus } from "./health-status";
 
 interface Animal {
   _id: Id<"animals">;
@@ -9,6 +10,10 @@ interface Animal {
   nomeTutor: string;
   tratamentoPara: string;
   tratamento: string;
+  fiv?: boolean;
+  felv?: boolean;
+  raiva?: boolean;
+  v6?: boolean;
 }
 
 interface AnimalsListProps {
@@ -54,6 +59,18 @@ export function AnimalsList({ animals, onViewAnimal }: AnimalsListProps) {
               <div className="mb-4">
                 <p className="text-sm font-medium text-gray-700 mb-1">Tratamento:</p>
                 <p className="text-sm text-gray-600 line-clamp-3">{animal.tratamento}</p>
+              </div>
+
+              <div className="mb-4">
+                <HealthStatus
+                  data={{
+                    fiv: animal.fiv || false,
+                    felv: animal.felv || false,
+                    raiva: animal.raiva || false,
+                    v6: animal.v6 || false
+                  }}
+                  editMode={false}
+                />
               </div>
 
               <button
