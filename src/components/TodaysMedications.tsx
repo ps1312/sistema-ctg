@@ -2,7 +2,7 @@ import { useMutation } from 'convex/react'
 import { api } from '../../convex/_generated/api'
 import { toast } from 'sonner'
 import { Id } from '../../convex/_generated/dataModel'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 interface Medication {
   _id: Id<'medicationRecords'>
@@ -62,7 +62,11 @@ export function TodaysMedications({ medications }: TodaysMedicationsProps) {
     return initialState
   }
 
-  const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>(getInitialCollapsedState)
+  const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({})
+
+  useEffect(() => {
+    setCollapsedSections(getInitialCollapsedState())
+  }, [medications])
   
   const markAsAdministered = useMutation(
     api.medications.markMedicationAsAdministered
