@@ -56,18 +56,20 @@ export function TodaysMedications({ medications }: TodaysMedicationsProps) {
     )
 
     const initialState: Record<string, boolean> = {}
-    Object.keys(groupedMedications).forEach(time => {
+    Object.keys(groupedMedications).forEach((time) => {
       initialState[time] = shouldCollapseSection(time)
     })
     return initialState
   }
 
-  const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({})
+  const [collapsedSections, setCollapsedSections] = useState<
+    Record<string, boolean>
+  >({})
 
   useEffect(() => {
     setCollapsedSections(getInitialCollapsedState())
   }, [medications])
-  
+
   const markAsAdministered = useMutation(
     api.medications.markMedicationAsAdministered
   )
@@ -100,9 +102,9 @@ export function TodaysMedications({ medications }: TodaysMedicationsProps) {
   }
 
   const toggleSection = (time: string) => {
-    setCollapsedSections(prev => ({
+    setCollapsedSections((prev) => ({
       ...prev,
-      [time]: !prev[time]
+      [time]: !prev[time],
     }))
   }
 
@@ -148,13 +150,16 @@ export function TodaysMedications({ medications }: TodaysMedicationsProps) {
                 <div className="flex items-center gap-3">
                   {(() => {
                     const totalMeds = groupedMedications[time].length
-                    const administeredMeds = groupedMedications[time].filter(med => med.administrado).length
+                    const administeredMeds = groupedMedications[time].filter(
+                      (med) => med.administrado
+                    ).length
                     const isComplete = administeredMeds === totalMeds
+
                     const isPastSection = shouldCollapseSection(time)
-                    
+
                     return (
                       <>
-                        {isPastSection && (
+                        {isPastSection && !isComplete && (
                           <span className="text-xs font-medium text-red-600">
                             Atenção!
                           </span>
@@ -164,8 +169,8 @@ export function TodaysMedications({ medications }: TodaysMedicationsProps) {
                             isPastSection
                               ? 'bg-red-100 text-red-800'
                               : isComplete
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-orange-100 text-orange-800'
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-orange-100 text-orange-800'
                           }`}
                         >
                           {administeredMeds}/{totalMeds}
@@ -174,90 +179,96 @@ export function TodaysMedications({ medications }: TodaysMedicationsProps) {
                     )
                   })()}
                   <svg
-                  className={`w-5 h-5 text-gray-500 transition-transform ${
-                    collapsedSections[time] ? 'rotate-180' : ''
-                  }`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
+                    className={`w-5 h-5 text-gray-500 transition-transform ${
+                      collapsedSections[time] ? 'rotate-180' : ''
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </div>
               </button>
 
               {!collapsedSections[time] && (
                 <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {groupedMedications[time].map((medication) => (
-                  <div
-                    key={medication._id}
-                    className={`border rounded-lg p-4 ${
-                      medication.administrado
-                        ? 'border-green-200 bg-green-50'
-                        : 'border-red-200 bg-red-50'
-                    }`}
-                  >
-                    <div className="flex justify-between items-starjt mb-3">
-                      <div>
-                        <h4 className="font-semibold text-gray-900">
-                          {medication.animal?.nome}
-                        </h4>
-                        <p className="text-sm text-gray-600">
-                          {medication.animal?.sexo} •{' '}
-                          {medication.animal?.pelagem}
-                        </p>
+                  {groupedMedications[time].map((medication) => (
+                    <div
+                      key={medication._id}
+                      className={`border rounded-lg p-4 ${
+                        medication.administrado
+                          ? 'border-green-200 bg-green-50'
+                          : 'border-red-200 bg-red-50'
+                      }`}
+                    >
+                      <div className="flex justify-between items-starjt mb-3">
+                        <div>
+                          <h4 className="font-semibold text-gray-900">
+                            {medication.animal?.nome}
+                          </h4>
+                          <p className="text-sm text-gray-600">
+                            {medication.animal?.sexo} •{' '}
+                            {medication.animal?.pelagem}
+                          </p>
+                        </div>
+                        <span
+                          className={`px-2 items-center flex text-xs font-medium rounded-full ${
+                            medication.administrado
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-red-100 text-red-800'
+                          }`}
+                        >
+                          {medication.administrado
+                            ? 'Administrada'
+                            : 'Pendente'}
+                        </span>
                       </div>
-                      <span
-                        className={`px-2 items-center flex text-xs font-medium rounded-full ${
-                          medication.administrado
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-red-100 text-red-800'
-                        }`}
-                      >
-                        {medication.administrado ? 'Administrada' : 'Pendente'}
-                      </span>
-                    </div>
 
-                    <div className="space-y-1 text-sm text-gray-600 mb-4">
-                      <p>
-                        <span className="font-medium">Medicamento:</span>{' '}
-                        {medication.medicamento}
-                      </p>
-                      <p>
-                        <span className="font-medium">Dose:</span>{' '}
-                        {medication.dose}
-                      </p>
-                      {medication.observacoes && (
+                      <div className="space-y-1 text-sm text-gray-600 mb-4">
                         <p>
-                          <span className="font-medium">Observações:</span>{' '}
-                          {medication.observacoes}
+                          <span className="font-medium">Medicamento:</span>{' '}
+                          {medication.medicamento}
                         </p>
+                        <p>
+                          <span className="font-medium">Dose:</span>{' '}
+                          {medication.dose}
+                        </p>
+                        {medication.observacoes && (
+                          <p>
+                            <span className="font-medium">Observações:</span>{' '}
+                            {medication.observacoes}
+                          </p>
+                        )}
+                      </div>
+
+                      {medication.administrado ? (
+                        <button
+                          onClick={() =>
+                            handleUndoAdministration(medication._id)
+                          }
+                          className="w-full bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors text-sm"
+                        >
+                          Desfazer Administração
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() =>
+                            handleMarkAsAdministered(medication._id)
+                          }
+                          className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors text-sm"
+                        >
+                          Marcar como Administrada
+                        </button>
                       )}
                     </div>
-
-                    {medication.administrado ? (
-                      <button
-                        onClick={() => handleUndoAdministration(medication._id)}
-                        className="w-full bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors text-sm"
-                      >
-                        Desfazer Administração
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => handleMarkAsAdministered(medication._id)}
-                        className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors text-sm"
-                      >
-                        Marcar como Administrada
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
               )}
               {/* Divider between time sections (except for the last one) */}
               {index < sortedTimes.length - 1 && (
