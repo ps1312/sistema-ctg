@@ -13,6 +13,7 @@ interface Medication {
   dose: string
   administrado: boolean
   observacoes?: string
+  endDate?: string
   animal: {
     _id: Id<'animals'>
     nome: string
@@ -126,6 +127,36 @@ export function TodaysMedications({ medications }: TodaysMedicationsProps) {
     return a.localeCompare(b)
   })
 
+  const lastDoseMedicationIds = (() => {
+    const lastDayMeds = medications.filter(
+      (m) => m.endDate && m.data === m.endDate
+    )
+    if (lastDayMeds.length === 0) return []
+
+    const groupedByAnimal = lastDayMeds.reduce(
+      (acc, med) => {
+        const key = med.animalId
+        if (!acc[key]) {
+          acc[key] = []
+        }
+        acc[key].push(med)
+        return acc
+      },
+      {} as Record<string, Medication[]>
+    )
+
+    const lastDoseIds: Id<'medicationRecords'>[] = []
+    for (const animalId in groupedByAnimal) {
+      const animalMeds = groupedByAnimal[animalId]
+      const latestMed = animalMeds.reduce((latest: Medication, med: Medication) => {
+        return med.horario > latest.horario ? med : latest
+      })
+      lastDoseIds.push(latestMed._id)
+    }
+
+    return lastDoseIds
+  })()
+
   return (
     <div>
       <h2 className="text-2xl font-bold text-gray-900 mb-6">
@@ -204,7 +235,9 @@ export function TodaysMedications({ medications }: TodaysMedicationsProps) {
                       className={`border rounded-lg p-4 ${
                         medication.administrado
                           ? 'border-green-200 bg-green-50'
-                          : 'border-red-200 bg-red-50'
+                          : lastDoseMedicationIds.includes(medication._id)
+                            ? 'border-blue-200 bg-blue-50'
+                            : 'border-red-200 bg-red-50'
                       }`}
                     >
                       <div className="flex justify-between items-starjt mb-3">
@@ -221,7 +254,9 @@ export function TodaysMedications({ medications }: TodaysMedicationsProps) {
                           className={`px-2 items-center flex text-xs font-medium rounded-full ${
                             medication.administrado
                               ? 'bg-green-100 text-green-800'
-                              : 'bg-red-100 text-red-800'
+                              : lastDoseMedicationIds.includes(medication._id)
+                                ? 'bg-blue-100 text-blue-800'
+                                : 'bg-red-100 text-red-800'
                           }`}
                         >
                           {medication.administrado
@@ -243,6 +278,11 @@ export function TodaysMedications({ medications }: TodaysMedicationsProps) {
                           <p>
                             <span className="font-medium">Observações:</span>{' '}
                             {medication.observacoes}
+                          </p>
+                        )}
+                        {lastDoseMedicationIds.includes(medication._id) && (
+                          <p className="text-blue-600 font-semibold mt-2">
+                            Última dose do tratamento.
                           </p>
                         )}
                       </div>
