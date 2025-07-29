@@ -68,7 +68,7 @@ export function TodaysMedications({ medications }: TodaysMedicationsProps) {
 
   useEffect(() => {
     setCollapsedSections(getInitialCollapsedState())
-  }, [medications])
+  }, [medications.length])
 
   const markAsAdministered = useMutation(
     api.medications.markMedicationAsAdministered
