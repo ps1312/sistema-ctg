@@ -136,7 +136,6 @@ export const undoMedicationAdministration = mutation({
       throw new Error('Medicação não encontrada')
     }
 
-    // Verify the animal exists and is active
     const animal = await ctx.db.get(medication.animalId)
     if (!animal || !animal.ativo) {
       throw new Error('Animal não encontrado')
@@ -147,5 +146,27 @@ export const undoMedicationAdministration = mutation({
       administradoPor: undefined,
       observacoes: undefined,
     })
+  },
+})
+
+export const deleteMedication = mutation({
+  args: { id: v.id('medicationRecords') },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx)
+    if (!userId) {
+      throw new Error('Usuário não autenticado')
+    }
+
+    const medication = await ctx.db.get(args.id)
+    if (!medication) {
+      throw new Error('Medicação não encontrada')
+    }
+
+    const animal = await ctx.db.get(medication.animalId)
+    if (!animal || !animal.ativo) {
+      throw new Error('Animal não encontrado')
+    }
+
+    await ctx.db.delete(args.id)
   },
 })

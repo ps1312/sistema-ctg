@@ -5,6 +5,7 @@ import { Id } from '../../convex/_generated/dataModel'
 import { toast } from 'sonner'
 import { AddMedicationForm } from './AddMedicationForm'
 import { HealthStatus } from './health-status'
+import TrashIcon from './trash-icon'
 
 interface AnimalDetailsProps {
   animalId: Id<'animals'>
@@ -34,6 +35,7 @@ export function AnimalDetails({ animalId, onBack }: AnimalDetailsProps) {
   })
   const updateAnimal = useMutation(api.animals.updateAnimal)
   const deactivateAnimal = useMutation(api.animals.deactivateAnimal)
+  const deleteMedication = useMutation(api.medications.deleteMedication)
 
   if (!animal) {
     return (
@@ -100,10 +102,22 @@ export function AnimalDetails({ animalId, onBack }: AnimalDetailsProps) {
     >
   ) => {
     const { name, value, type, checked } = e.target as HTMLInputElement
-    setEditData((prev) => ({ 
-      ...prev, 
-      [name]: type === 'checkbox' ? checked : value 
+    setEditData((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
     }))
+  }
+
+  const handleDeleteMedication = async (
+    medicationId: Id<'medicationRecords'>
+  ) => {
+    try {
+      await deleteMedication({ id: medicationId })
+      toast.success('Medicação excluída com sucesso!')
+    } catch (error) {
+      toast.error('Erro ao excluir medicação')
+      console.error(error)
+    }
   }
 
   return (
@@ -251,13 +265,13 @@ export function AnimalDetails({ animalId, onBack }: AnimalDetailsProps) {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
-              
+
               <HealthStatus
                 data={{
                   fiv: editData.fiv,
                   felv: editData.felv,
                   raiva: editData.raiva,
-                  v6: editData.v6
+                  v6: editData.v6,
                 }}
                 editMode={true}
                 onChange={handleChange}
@@ -307,13 +321,13 @@ export function AnimalDetails({ animalId, onBack }: AnimalDetailsProps) {
                 <span className="font-medium text-gray-700">Tratamento:</span>
                 <p className="text-gray-600 mt-1">{animal.tratamento}</p>
               </div>
-              
+
               <HealthStatus
                 data={{
                   fiv: (animal as any).fiv || false,
                   felv: (animal as any).felv || false,
                   raiva: (animal as any).raiva || false,
-                  v6: (animal as any).v6 || false
+                  v6: (animal as any).v6 || false,
                 }}
                 editMode={false}
               />
@@ -344,15 +358,23 @@ export function AnimalDetails({ animalId, onBack }: AnimalDetailsProps) {
                     <div className="text-sm text-gray-600">
                       {medication.data} às {medication.horario}
                     </div>
-                    <span
-                      className={`px-2 py-1 text-xs font-medium rounded-full ${
-                        medication.administrado
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}
-                    >
-                      {medication.administrado ? 'Administrada' : 'Pendente'}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`px-2 py-1 text-xs font-medium rounded-full ${
+                          medication.administrado
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                        }`}
+                      >
+                        {medication.administrado ? 'Administrada' : 'Pendente'}
+                      </span>
+                      <button
+                        onClick={() => handleDeleteMedication(medication._id)}
+                        className="text-blue-600 hover:text-blue-800"
+                      >
+                        <TrashIcon size={20} color="red" />
+                      </button>
+                    </div>
                   </div>
                   <div className="space-y-1 text-sm">
                     <p>
