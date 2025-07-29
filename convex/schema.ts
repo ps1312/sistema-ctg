@@ -22,6 +22,7 @@ const applicationTables = {
   medicationRecords: defineTable({
     animalId: v.id('animals'),
     data: v.string(),
+    endDate: v.optional(v.string()),
     horario: v.string(),
     medicamento: v.string(),
     dose: v.string(),

@@ -1,74 +1,87 @@
-import { useState } from "react";
-import { useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
-import { Id } from "../../convex/_generated/dataModel";
-import { toast } from "sonner";
+import { useState } from 'react'
+import { useMutation } from 'convex/react'
+import { api } from '../../convex/_generated/api'
+import { Id } from '../../convex/_generated/dataModel'
+import { toast } from 'sonner'
 
 interface AddMedicationFormProps {
-  animalId: Id<"animals">;
-  animalName: string;
-  onSuccess: () => void;
+  animalId: Id<'animals'>
+  animalName: string
+  onSuccess: () => void
 }
 
-export function AddMedicationForm({ animalId, animalName, onSuccess }: AddMedicationFormProps) {
-  const [formData, setFormData] = useState({
+function defaultFormValues() {
+  return {
     data: new Date().toISOString().split('T')[0],
-    horario: "",
-    medicamento: "",
-    dose: "",
-    observacoes: "",
-  });
+    endDate: '',
+    horario: '',
+    medicamento: '',
+    dose: '',
+    observacoes: '',
+  }
+}
 
-  const addMedicationRecord = useMutation(api.medications.addMedicationRecord);
+export function AddMedicationForm({
+  animalId,
+  animalName,
+  onSuccess,
+}: AddMedicationFormProps) {
+  const [formData, setFormData] = useState(defaultFormValues())
+  const addMedicationRecord = useMutation(api.medications.addMedicationRecord)
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!formData.horario.trim() || !formData.medicamento.trim() || !formData.dose.trim()) {
-      toast.error("Por favor, preencha todos os campos obrigatórios");
-      return;
+    e.preventDefault()
+
+    if (
+      !formData.horario.trim() ||
+      !formData.medicamento.trim() ||
+      !formData.dose.trim()
+    ) {
+      toast.error('Por favor, preencha todos os campos obrigatórios')
+      return
     }
 
     try {
       await addMedicationRecord({
         animalId,
         data: formData.data,
+        endDate: formData.endDate,
         horario: formData.horario,
         medicamento: formData.medicamento,
         dose: formData.dose,
         observacoes: formData.observacoes || undefined,
-      });
-      toast.success("Medicação adicionada com sucesso!");
-      setFormData({
-        data: new Date().toISOString().split('T')[0],
-        horario: "",
-        medicamento: "",
-        dose: "",
-        observacoes: "",
-      });
-      onSuccess();
+      })
+      toast.success('Medicação adicionada com sucesso!')
+      setFormData(defaultFormValues())
+      onSuccess()
     } catch (error) {
-      toast.error("Erro ao adicionar medicação");
-      console.error(error);
+      toast.error('Erro ao adicionar medicação')
+      console.error(error)
     }
-  };
+  }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <p className="text-sm text-gray-600 mb-4">
-          Adicionando medicação para: <span className="font-semibold">{animalName}</span>
+          Adicionando medicação para:{' '}
+          <span className="font-semibold">{animalName}</span>
         </p>
       </div>
 
       <div>
-        <label htmlFor="data" className="block text-sm font-medium text-gray-700 mb-1">
-          Data *
+        <label
+          htmlFor="data"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
+          Início da medicação *
         </label>
         <input
           type="date"
@@ -82,7 +95,27 @@ export function AddMedicationForm({ animalId, animalName, onSuccess }: AddMedica
       </div>
 
       <div>
-        <label htmlFor="horario" className="block text-sm font-medium text-gray-700 mb-1">
+        <label
+          htmlFor="endDate"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
+          Fim da medicação
+        </label>
+        <input
+          type="date"
+          id="endDate"
+          name="endDate"
+          value={formData.endDate}
+          onChange={handleChange}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <div>
+        <label
+          htmlFor="horario"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           Horário *
         </label>
         <input
@@ -97,7 +130,10 @@ export function AddMedicationForm({ animalId, animalName, onSuccess }: AddMedica
       </div>
 
       <div>
-        <label htmlFor="medicamento" className="block text-sm font-medium text-gray-700 mb-1">
+        <label
+          htmlFor="medicamento"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           Medicamento *
         </label>
         <input
@@ -113,7 +149,10 @@ export function AddMedicationForm({ animalId, animalName, onSuccess }: AddMedica
       </div>
 
       <div>
-        <label htmlFor="dose" className="block text-sm font-medium text-gray-700 mb-1">
+        <label
+          htmlFor="dose"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           Dose *
         </label>
         <input
@@ -129,7 +168,10 @@ export function AddMedicationForm({ animalId, animalName, onSuccess }: AddMedica
       </div>
 
       <div>
-        <label htmlFor="observacoes" className="block text-sm font-medium text-gray-700 mb-1">
+        <label
+          htmlFor="observacoes"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           Observações
         </label>
         <textarea
@@ -159,5 +201,5 @@ export function AddMedicationForm({ animalId, animalName, onSuccess }: AddMedica
         </button>
       </div>
     </form>
-  );
+  )
 }
