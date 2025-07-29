@@ -17,6 +17,7 @@ function defaultFormValues() {
     horario: '',
     medicamento: '',
     dose: '',
+    secondDoseTime: '',
     observacoes: '',
   }
 }
@@ -42,7 +43,7 @@ export function AddMedicationForm({
     }
 
     try {
-      await addMedicationRecord({
+      const medicationRecord = {
         animalId,
         data: formData.data,
         endDate: formData.endDate,
@@ -50,7 +51,15 @@ export function AddMedicationForm({
         medicamento: formData.medicamento,
         dose: formData.dose,
         observacoes: formData.observacoes || undefined,
-      })
+      }
+
+      await addMedicationRecord(medicationRecord)
+
+      if (formData.secondDoseTime) {
+        medicationRecord.horario = formData.secondDoseTime
+        await addMedicationRecord(medicationRecord)
+      }
+
       toast.success('Medicação adicionada com sucesso!')
       setFormData(defaultFormValues())
       onSuccess()
@@ -111,22 +120,40 @@ export function AddMedicationForm({
         />
       </div>
 
-      <div>
-        <label
-          htmlFor="horario"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Horário *
-        </label>
-        <input
-          type="time"
-          id="horario"
-          name="horario"
-          value={formData.horario}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        />
+      <div className="flex gap-4">
+        <div className="flex-1">
+          <label
+            htmlFor="horario"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Horário da primeira dose *
+          </label>
+          <input
+            type="time"
+            id="horario"
+            name="horario"
+            value={formData.horario}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+        </div>
+        <div className="flex-1">
+          <label
+            htmlFor="secondDoseTime"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Horário da segunda dose
+          </label>
+          <input
+            type="time"
+            id="secondDoseTime"
+            name="secondDoseTime"
+            value={formData.secondDoseTime}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
       </div>
 
       <div>
