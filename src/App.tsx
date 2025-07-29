@@ -46,9 +46,6 @@ function Content() {
             <h1 className="text-3xl font-bold text-gray-900 mb-4">
               Sistema de Controle de Medicamentos
             </h1>
-            <p className="text-gray-600">
-              Faça login para gerenciar os medicamentos dos animais do abrigo
-            </p>
           </div>
           <SignInForm />
         </div>
