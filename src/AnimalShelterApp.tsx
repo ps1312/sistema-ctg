@@ -13,8 +13,26 @@ export function AnimalShelterApp() {
   const [currentView, setCurrentView] = useState<View>("dashboard");
   const [selectedAnimalId, setSelectedAnimalId] = useState<Id<"animals"> | null>(null);
 
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  const formatDate = (date: Date) => {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const dateString = event.target.value;
+    const [year, month, day] = dateString.split('-').map(Number);
+    const newDate = new Date(year, month - 1, day);
+    setSelectedDate(newDate);
+  };
+
   const animals = useQuery(api.animals.listAnimals) || [];
-  const todaysMedications = useQuery(api.medications.getTodaysMedications) || [];
+  const medicationsForDate = useQuery(api.medications.getMedicationsByDate, { 
+    date: formatDate(selectedDate) 
+  }) || [];
 
   const handleViewAnimal = (animalId: Id<"animals">) => {
     setSelectedAnimalId(animalId);
@@ -45,16 +63,21 @@ export function AnimalShelterApp() {
               </div>
               <div className="bg-white p-6 rounded-lg shadow-sm border">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Medicações Hoje</h3>
-                <p className="text-3xl font-bold text-green-600">{todaysMedications.length}</p>
+                <p className="text-3xl font-bold text-green-600">{medicationsForDate.length}</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-sm border">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Administradas</h3>
                 <p className="text-3xl font-bold text-purple-600">
-                  {todaysMedications.filter(med => med.administrado).length}
+                  {medicationsForDate.filter(med => med.administrado).length}
                 </p>
               </div>
             </div>
-            <TodaysMedications medications={todaysMedications} />
+            <TodaysMedications 
+            medications={medicationsForDate} 
+            selectedDate={selectedDate}
+            handleDateChange={handleDateChange}
+            formatDate={formatDate}
+          />
           </div>
         );
     }

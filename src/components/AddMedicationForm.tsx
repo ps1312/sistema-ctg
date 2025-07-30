@@ -29,6 +29,9 @@ export function AddMedicationForm({
 }: AddMedicationFormProps) {
   const [formData, setFormData] = useState(defaultFormValues())
   const addMedicationRecord = useMutation(api.medications.addMedicationRecord)
+  const addMultipleMedicationRecords = useMutation(
+    api.medications.addMultipleMedicationRecords
+  )
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -53,10 +56,9 @@ export function AddMedicationForm({
         observacoes: formData.observacoes || undefined,
       }
 
-      await addMedicationRecord(medicationRecord)
-
-      if (formData.secondDoseTime) {
-        medicationRecord.horario = formData.secondDoseTime
+      if (formData.endDate) {
+        await addMultipleMedicationRecords(medicationRecord)
+      } else {
         await addMedicationRecord(medicationRecord)
       }
 

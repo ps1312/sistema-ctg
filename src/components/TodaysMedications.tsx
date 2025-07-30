@@ -1,4 +1,5 @@
 import { useMutation } from 'convex/react'
+
 import { api } from '../../convex/_generated/api'
 import { toast } from 'sonner'
 import { Id } from '../../convex/_generated/dataModel'
@@ -27,10 +28,18 @@ interface Medication {
 }
 
 interface TodaysMedicationsProps {
-  medications: Medication[]
+  medications: Medication[];
+  selectedDate: Date;
+  handleDateChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  formatDate: (date: Date) => string;
 }
 
-export function TodaysMedications({ medications }: TodaysMedicationsProps) {
+export function TodaysMedications({
+  medications,
+  selectedDate,
+  handleDateChange,
+  formatDate,
+}: TodaysMedicationsProps) {
   const getCurrentHour = () => {
     const now = new Date()
     return now.getHours()
@@ -45,7 +54,7 @@ export function TodaysMedications({ medications }: TodaysMedicationsProps) {
 
   const getInitialCollapsedState = () => {
     const groupedMedications = medications.reduce(
-      (groups, medication) => {
+      (groups: Record<string, Medication[]>, medication: Medication) => {
         const time = medication.horario
         if (!groups[time]) {
           groups[time] = []
@@ -111,7 +120,7 @@ export function TodaysMedications({ medications }: TodaysMedicationsProps) {
 
   // Group medications by time
   const groupedMedications = medications.reduce(
-    (groups, medication) => {
+    (groups: Record<string, Medication[]>, medication: Medication) => {
       const time = medication.horario
       if (!groups[time]) {
         groups[time] = []
@@ -129,12 +138,12 @@ export function TodaysMedications({ medications }: TodaysMedicationsProps) {
 
   const lastDoseMedicationIds = (() => {
     const lastDayMeds = medications.filter(
-      (m) => m.endDate && m.data === m.endDate
+      (m: Medication) => m.endDate && m.data === m.endDate
     )
     if (lastDayMeds.length === 0) return []
 
     const groupedByAnimal = lastDayMeds.reduce(
-      (acc, med) => {
+      (acc: Record<string, Medication[]>, med: Medication) => {
         const key = med.animalId
         if (!acc[key]) {
           acc[key] = []
@@ -148,9 +157,11 @@ export function TodaysMedications({ medications }: TodaysMedicationsProps) {
     const lastDoseIds: Id<'medicationRecords'>[] = []
     for (const animalId in groupedByAnimal) {
       const animalMeds = groupedByAnimal[animalId]
-      const latestMed = animalMeds.reduce((latest: Medication, med: Medication) => {
-        return med.horario > latest.horario ? med : latest
-      })
+      const latestMed = animalMeds.reduce(
+        (latest: Medication, med: Medication) => {
+          return med.horario > latest.horario ? med : latest
+        }
+      )
       lastDoseIds.push(latestMed._id)
     }
 
@@ -159,14 +170,25 @@ export function TodaysMedications({ medications }: TodaysMedicationsProps) {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">
-        Medicações de Hoje
-      </h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-900">
+          Medicações para {selectedDate.toLocaleDateString('pt-BR')}
+        </h2>
+        <div className="relative">
+          <input
+            type="date"
+            value={formatDate(selectedDate)}
+            onChange={handleDateChange}
+            className="px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          
+        </div>
+      </div>
 
       {medications.length === 0 ? (
         <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
           <p className="text-gray-500 text-lg">
-            Nenhuma medicação programada para hoje.
+            Nenhuma medicação programada para esta data.
           </p>
         </div>
       ) : (
@@ -182,7 +204,7 @@ export function TodaysMedications({ medications }: TodaysMedicationsProps) {
                   {(() => {
                     const totalMeds = groupedMedications[time].length
                     const administeredMeds = groupedMedications[time].filter(
-                      (med) => med.administrado
+                      (med: Medication) => med.administrado
                     ).length
                     const isComplete = administeredMeds === totalMeds
 
@@ -229,7 +251,7 @@ export function TodaysMedications({ medications }: TodaysMedicationsProps) {
 
               {!collapsedSections[time] && (
                 <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {groupedMedications[time].map((medication) => (
+                  {groupedMedications[time].map((medication: Medication) => (
                     <div
                       key={medication._id}
                       className={`border rounded-lg p-4 ${
@@ -240,7 +262,7 @@ export function TodaysMedications({ medications }: TodaysMedicationsProps) {
                             : 'border-red-200 bg-red-50'
                       }`}
                     >
-                      <div className="flex justify-between items-starjt mb-3">
+                      <div className="flex justify-between items-start mb-3">
                         <div>
                           <h4 className="font-semibold text-gray-900">
                             {medication.animal?.nome}

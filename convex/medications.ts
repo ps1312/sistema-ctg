@@ -6,7 +6,6 @@ export const addMedicationRecord = mutation({
   args: {
     animalId: v.id('animals'),
     data: v.string(),
-    endDate: v.optional(v.string()),
     horario: v.string(),
     medicamento: v.string(),
     dose: v.string(),
@@ -18,7 +17,6 @@ export const addMedicationRecord = mutation({
       throw new Error('Usuário não autenticado')
     }
 
-    // Verify the animal exists and is active
     const animal = await ctx.db.get(args.animalId)
     if (!animal || !animal.ativo) {
       throw new Error('Animal não encontrado')
@@ -31,6 +29,44 @@ export const addMedicationRecord = mutation({
   },
 })
 
+export const addMultipleMedicationRecords = mutation({
+  args: {
+    animalId: v.id('animals'),
+    data: v.string(),
+    endDate: v.string(),
+    horario: v.string(),
+    medicamento: v.string(),
+    dose: v.string(),
+    observacoes: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx)
+    if (!userId) {
+      throw new Error('Usuário não autenticado')
+    }
+
+    const animal = await ctx.db.get(args.animalId)
+    if (!animal || !animal.ativo) {
+      throw new Error('Animal não encontrado')
+    }
+
+    const startDate = new Date(args.data)
+    const endDate = new Date(args.endDate)
+
+    const currentDate = startDate
+    while (currentDate <= endDate) {
+      await ctx.db.insert('medicationRecords', {
+        ...args,
+        data: currentDate.toISOString().split('T')[0],
+        administrado: false,
+      })
+      currentDate.setDate(currentDate.getDate() + 1)
+    }
+
+    return true
+  },
+})
+
 export const getMedicationsByAnimal = query({
   args: { animalId: v.id('animals') },
   handler: async (ctx, args) => {
@@ -39,7 +75,6 @@ export const getMedicationsByAnimal = query({
       return []
     }
 
-    // Verify the animal exists and is active
     const animal = await ctx.db.get(args.animalId)
     if (!animal || !animal.ativo) {
       return []
@@ -53,19 +88,17 @@ export const getMedicationsByAnimal = query({
   },
 })
 
-export const getTodaysMedications = query({
-  args: {},
-  handler: async (ctx) => {
+export const getMedicationsByDate = query({
+  args: { date: v.string() },
+  handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx)
     if (!userId) {
       return []
     }
 
-    const today = new Date().toISOString().split('T')[0]
-
     const medications = await ctx.db
       .query('medicationRecords')
-      .withIndex('by_date', (q) => q.eq('data', today))
+      .withIndex('by_date', (q) => q.eq('data', args.date))
       .collect()
 
     // Get all active animals
