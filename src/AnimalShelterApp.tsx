@@ -30,9 +30,11 @@ export function AnimalShelterApp() {
   };
 
   const animals = useQuery(api.animals.listAnimals) || [];
-  const medicationsForDate = useQuery(api.medications.getMedicationsByDate, { 
-    date: formatDate(selectedDate) 
-  }) || [];
+  const medicationsQueryResult = useQuery(api.medications.getMedicationsByDate, {
+    date: formatDate(selectedDate),
+  });
+  const medicationsForDate = medicationsQueryResult || [];
+  const isLoadingMedications = medicationsQueryResult === undefined;
 
   const handleViewAnimal = (animalId: Id<"animals">) => {
     setSelectedAnimalId(animalId);
@@ -72,12 +74,13 @@ export function AnimalShelterApp() {
                 </p>
               </div>
             </div>
-            <TodaysMedications 
-            medications={medicationsForDate} 
-            selectedDate={selectedDate}
-            handleDateChange={handleDateChange}
-            formatDate={formatDate}
-          />
+            <TodaysMedications
+              medications={medicationsForDate}
+              selectedDate={selectedDate}
+              handleDateChange={handleDateChange}
+              formatDate={formatDate}
+              isLoading={isLoadingMedications}
+            />
           </div>
         );
     }

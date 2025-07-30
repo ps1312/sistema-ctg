@@ -32,6 +32,7 @@ interface TodaysMedicationsProps {
   selectedDate: Date;
   handleDateChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   formatDate: (date: Date) => string;
+  isLoading: boolean;
 }
 
 export function TodaysMedications({
@@ -39,6 +40,7 @@ export function TodaysMedications({
   selectedDate,
   handleDateChange,
   formatDate,
+  isLoading,
 }: TodaysMedicationsProps) {
   const getCurrentHour = () => {
     const now = new Date()
@@ -185,7 +187,11 @@ export function TodaysMedications({
         </div>
       </div>
 
-      {medications.length === 0 ? (
+      {isLoading ? (
+        <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
+          <p className="text-gray-500 text-lg">Carregando...</p>
+        </div>
+      ) : medications.length === 0 ? (
         <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
           <p className="text-gray-500 text-lg">
             Nenhuma medicação programada para esta data.
