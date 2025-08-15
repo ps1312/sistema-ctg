@@ -6,24 +6,24 @@ import { Id } from '../../convex/_generated/dataModel'
 import { useState, useEffect } from 'react'
 
 interface Medication {
-  _id: Id<'medicationRecords'>
-  animalId: Id<'animals'>
-  data: string
-  horario: string
-  medicamento: string
+  _id: Id<'medicationRecordsEn'>
+  animalId: Id<'animalsEn'>
+  date: string
+  time: string
+  medication: string
   dose: string
-  administrado: boolean
-  observacoes?: string
+  administered: boolean
+  observations?: string
   endDate?: string
   animal: {
-    _id: Id<'animals'>
-    nome: string
-    sexo: 'Macho' | 'Fêmea'
-    pelagem: string
-    idade: string
-    nomeTutor: string
-    tratamentoPara: string
-    tratamento: string
+    _id: Id<'animalsEn'>
+    name: string
+    sex: 'Macho' | 'Femea'
+    coat: string
+    age: string
+    ownerName: string
+    treatmentFor: string
+    treatment: string
   } | null
 }
 
@@ -57,7 +57,7 @@ export function TodaysMedications({
   const getInitialCollapsedState = () => {
     const groupedMedications = medications.reduce(
       (groups: Record<string, Medication[]>, medication: Medication) => {
-        const time = medication.horario
+        const time = medication.time
         if (!groups[time]) {
           groups[time] = []
         }
@@ -123,7 +123,7 @@ export function TodaysMedications({
   // Group medications by time
   const groupedMedications = medications.reduce(
     (groups: Record<string, Medication[]>, medication: Medication) => {
-      const time = medication.horario
+      const time = medication.time
       if (!groups[time]) {
         groups[time] = []
       }
@@ -140,7 +140,7 @@ export function TodaysMedications({
 
   const lastDoseMedicationIds = (() => {
     const lastDayMeds = medications.filter(
-      (m: Medication) => m.endDate && m.data === m.endDate
+      (m: Medication) => m.endDate && m.date === m.endDate
     )
     if (lastDayMeds.length === 0) return []
 
@@ -161,7 +161,7 @@ export function TodaysMedications({
       const animalMeds = groupedByAnimal[animalId]
       const latestMed = animalMeds.reduce(
         (latest: Medication, med: Medication) => {
-          return med.horario > latest.horario ? med : latest
+          return med.time > latest.time ? med : latest
         }
       )
       lastDoseIds.push(latestMed._id)
@@ -210,7 +210,7 @@ export function TodaysMedications({
                   {(() => {
                     const totalMeds = groupedMedications[time].length
                     const administeredMeds = groupedMedications[time].filter(
-                      (med: Medication) => med.administrado
+                      (med: Medication) => med.administered
                     ).length
                     const isComplete = administeredMeds === totalMeds
 
@@ -261,7 +261,7 @@ export function TodaysMedications({
                     <div
                       key={medication._id}
                       className={`border rounded-lg p-4 ${
-                        medication.administrado
+                        medication.administered
                           ? 'border-green-200 bg-green-50'
                           : lastDoseMedicationIds.includes(medication._id)
                             ? 'border-blue-200 bg-blue-50'
@@ -271,23 +271,23 @@ export function TodaysMedications({
                       <div className="flex justify-between items-start mb-3">
                         <div>
                           <h4 className="font-semibold text-gray-900">
-                            {medication.animal?.nome}
+                            {medication.animal?.name}
                           </h4>
                           <p className="text-sm text-gray-600">
-                            {medication.animal?.sexo} •{' '}
-                            {medication.animal?.pelagem}
+                            {medication.animal?.sex} •{' '}
+                            {medication.animal?.coat}
                           </p>
                         </div>
                         <span
                           className={`px-2 items-center flex text-xs font-medium rounded-full ${
-                            medication.administrado
+                            medication.administered
                               ? 'bg-green-100 text-green-800'
                               : lastDoseMedicationIds.includes(medication._id)
                                 ? 'bg-blue-100 text-blue-800'
                                 : 'bg-red-100 text-red-800'
                           }`}
                         >
-                          {medication.administrado
+                          {medication.administered
                             ? 'Administrada'
                             : 'Pendente'}
                         </span>
@@ -296,16 +296,16 @@ export function TodaysMedications({
                       <div className="space-y-1 text-sm text-gray-600 mb-4">
                         <p>
                           <span className="font-medium">Medicamento:</span>{' '}
-                          {medication.medicamento}
+                          {medication.medication}
                         </p>
                         <p>
                           <span className="font-medium">Dose:</span>{' '}
                           {medication.dose}
                         </p>
-                        {medication.observacoes && (
+                        {medication.observations && (
                           <p>
                             <span className="font-medium">Observações:</span>{' '}
-                            {medication.observacoes}
+                            {medication.observations}
                           </p>
                         )}
                         {lastDoseMedicationIds.includes(medication._id) && (
@@ -315,7 +315,7 @@ export function TodaysMedications({
                         )}
                       </div>
 
-                      {medication.administrado ? (
+                      {medication.administered ? (
                         <button
                           onClick={() =>
                             handleUndoAdministration(medication._id)

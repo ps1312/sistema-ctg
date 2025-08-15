@@ -4,16 +4,16 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 
 export const addAnimal = mutation({
   args: {
-    nome: v.string(),
-    sexo: v.union(v.literal("Macho"), v.literal("Fêmea")),
-    pelagem: v.string(),
-    idade: v.string(),
-    nomeTutor: v.string(),
-    tratamentoPara: v.string(),
-    tratamento: v.string(),
+    name: v.string(),
+    sex: v.union(v.literal("Macho"), v.literal("Femea")),
+    coat: v.string(),
+    age: v.string(),
+    ownerName: v.string(),
+    treatmentFor: v.string(),
+    treatment: v.string(),
     fiv: v.boolean(),
     felv: v.boolean(),
-    raiva: v.boolean(),
+    rabies: v.boolean(),
     v6: v.boolean(),
   },
   handler: async (ctx, args) => {
@@ -22,9 +22,9 @@ export const addAnimal = mutation({
       throw new Error("Usuário não autenticado");
     }
 
-    return await ctx.db.insert("animals", {
+    return await ctx.db.insert("animalsEn", {
       ...args,
-      ativo: true,
+      active: true,
       createdBy: userId,
     });
   },
@@ -39,14 +39,14 @@ export const listAnimals = query({
     }
 
     return await ctx.db
-      .query("animals")
-      .filter((q) => q.eq(q.field("ativo"), true))
+      .query("animalsEn")
+      .filter((q) => q.eq(q.field("active"), true))
       .collect();
   },
 });
 
 export const getAnimal = query({
-  args: { id: v.id("animals") },
+  args: { id: v.id("animalsEn") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
@@ -54,7 +54,7 @@ export const getAnimal = query({
     }
 
     const animal = await ctx.db.get(args.id);
-    if (!animal || !animal.ativo) {
+    if (!animal || !animal.active) {
       return null;
     }
 
@@ -64,17 +64,17 @@ export const getAnimal = query({
 
 export const updateAnimal = mutation({
   args: {
-    id: v.id("animals"),
-    nome: v.string(),
-    sexo: v.union(v.literal("Macho"), v.literal("Fêmea")),
-    pelagem: v.string(),
-    idade: v.string(),
-    nomeTutor: v.string(),
-    tratamentoPara: v.string(),
-    tratamento: v.string(),
+    id: v.id("animalsEn"),
+    name: v.string(),
+    sex: v.union(v.literal("Macho"), v.literal("Femea")),
+    coat: v.string(),
+    age: v.string(),
+    ownerName: v.string(),
+    treatmentFor: v.string(),
+    treatment: v.string(),
     fiv: v.boolean(),
     felv: v.boolean(),
-    raiva: v.boolean(),
+    rabies: v.boolean(),
     v6: v.boolean(),
   },
   handler: async (ctx, args) => {
@@ -94,7 +94,7 @@ export const updateAnimal = mutation({
 });
 
 export const deactivateAnimal = mutation({
-  args: { id: v.id("animals") },
+  args: { id: v.id("animalsEn") },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) {
@@ -106,6 +106,6 @@ export const deactivateAnimal = mutation({
       throw new Error("Animal não encontrado");
     }
 
-    await ctx.db.patch(args.id, { ativo: false });
+    await ctx.db.patch(args.id, { active: false });
   },
 });

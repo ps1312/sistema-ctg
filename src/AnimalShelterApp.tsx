@@ -70,7 +70,7 @@ export function AnimalShelterApp() {
               <div className="bg-white p-6 rounded-lg shadow-sm border">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Administradas</h3>
                 <p className="text-3xl font-bold text-purple-600">
-                  {medicationsForDate.filter(med => med.administrado).length}
+                  {medicationsForDate.filter(med => med.administered).length}
                 </p>
               </div>
             </div>

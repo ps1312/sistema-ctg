@@ -8,7 +8,7 @@ import { HealthStatus } from './health-status'
 import TrashIcon from './trash-icon'
 
 interface AnimalDetailsProps {
-  animalId: Id<'animals'>
+  animalId: Id<'animalsEn'>
   onBack: () => void
 }
 
@@ -16,16 +16,16 @@ export function AnimalDetails({ animalId, onBack }: AnimalDetailsProps) {
   const [showAddMedication, setShowAddMedication] = useState(false)
   const [editMode, setEditMode] = useState(false)
   const [editData, setEditData] = useState({
-    nome: '',
-    sexo: 'Macho' as 'Macho' | 'Fêmea',
-    pelagem: '',
-    idade: '',
-    nomeTutor: '',
-    tratamentoPara: '',
-    tratamento: '',
+    name: '',
+    sex: 'Macho' as 'Macho' | 'Femea',
+    coat: '',
+    age: '',
+    ownerName: '',
+    treatmentFor: '',
+    treatment: '',
     fiv: false,
     felv: false,
-    raiva: false,
+    rabies: false,
     v6: false,
   })
 
@@ -53,16 +53,16 @@ export function AnimalDetails({ animalId, onBack }: AnimalDetailsProps) {
 
   const handleEdit = () => {
     setEditData({
-      nome: animal.nome,
-      sexo: animal.sexo,
-      pelagem: animal.pelagem,
-      idade: animal.idade,
-      nomeTutor: animal.nomeTutor,
-      tratamentoPara: animal.tratamentoPara,
-      tratamento: animal.tratamento,
+      name: animal.name,
+      sex: animal.sex,
+      coat: animal.coat,
+      age: animal.age,
+      ownerName: animal.ownerName,
+      treatmentFor: animal.treatmentFor,
+      treatment: animal.treatment,
       fiv: (animal as any).fiv || false,
       felv: (animal as any).felv || false,
-      raiva: (animal as any).raiva || false,
+      rabies: (animal as any).rabies || false,
       v6: (animal as any).v6 || false,
     })
     setEditMode(true)
@@ -109,7 +109,7 @@ export function AnimalDetails({ animalId, onBack }: AnimalDetailsProps) {
   }
 
   const handleDeleteMedication = async (
-    medicationId: Id<'medicationRecords'>
+    medicationId: Id<'medicationRecordsEn'>
   ) => {
     try {
       await deleteMedication({ id: medicationId })
@@ -185,8 +185,8 @@ export function AnimalDetails({ animalId, onBack }: AnimalDetailsProps) {
                 </label>
                 <input
                   type="text"
-                  name="nome"
-                  value={editData.nome}
+                  name="name"
+                  value={editData.name}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -196,13 +196,13 @@ export function AnimalDetails({ animalId, onBack }: AnimalDetailsProps) {
                   Sexo
                 </label>
                 <select
-                  name="sexo"
-                  value={editData.sexo}
+                  name="sex"
+                  value={editData.sex}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="Macho">Macho</option>
-                  <option value="Fêmea">Fêmea</option>
+                  <option value="Femea">Fêmea</option>
                 </select>
               </div>
               <div>
@@ -211,8 +211,8 @@ export function AnimalDetails({ animalId, onBack }: AnimalDetailsProps) {
                 </label>
                 <input
                   type="text"
-                  name="pelagem"
-                  value={editData.pelagem}
+                  name="coat"
+                  value={editData.coat}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -223,8 +223,8 @@ export function AnimalDetails({ animalId, onBack }: AnimalDetailsProps) {
                 </label>
                 <input
                   type="text"
-                  name="idade"
-                  value={editData.idade}
+                  name="age"
+                  value={editData.age}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -235,8 +235,8 @@ export function AnimalDetails({ animalId, onBack }: AnimalDetailsProps) {
                 </label>
                 <input
                   type="text"
-                  name="nomeTutor"
-                  value={editData.nomeTutor}
+                  name="ownerName"
+                  value={editData.ownerName}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -246,8 +246,8 @@ export function AnimalDetails({ animalId, onBack }: AnimalDetailsProps) {
                   Tratamento Para
                 </label>
                 <textarea
-                  name="tratamentoPara"
-                  value={editData.tratamentoPara}
+                  name="treatmentFor"
+                  value={editData.treatmentFor}
                   onChange={handleChange}
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -258,8 +258,8 @@ export function AnimalDetails({ animalId, onBack }: AnimalDetailsProps) {
                   Tratamento
                 </label>
                 <textarea
-                  name="tratamento"
-                  value={editData.tratamento}
+                  name="treatment"
+                  value={editData.treatment}
                   onChange={handleChange}
                   rows={4}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -270,7 +270,7 @@ export function AnimalDetails({ animalId, onBack }: AnimalDetailsProps) {
                 data={{
                   fiv: editData.fiv,
                   felv: editData.felv,
-                  raiva: editData.raiva,
+                  rabies: editData.rabies,
                   v6: editData.v6,
                 }}
                 editMode={true}
@@ -281,52 +281,52 @@ export function AnimalDetails({ animalId, onBack }: AnimalDetailsProps) {
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <h3 className="text-xl font-semibold text-gray-900">
-                  {animal.nome}
+                  {animal.name}
                 </h3>
                 <span
                   className={`px-3 py-1 text-sm font-medium rounded-full ${
-                    animal.sexo === 'Macho'
+                    animal.sex === 'Macho'
                       ? 'bg-blue-100 text-blue-800'
                       : 'bg-pink-100 text-pink-800'
                   }`}
                 >
-                  {animal.sexo}
+                  {animal.sex}
                 </span>
               </div>
 
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="font-medium text-gray-700">Pelagem:</span>
-                  <p className="text-gray-600">{animal.pelagem}</p>
+                  <p className="text-gray-600">{animal.coat}</p>
                 </div>
                 <div>
                   <span className="font-medium text-gray-700">Idade:</span>
-                  <p className="text-gray-600">{animal.idade}</p>
+                  <p className="text-gray-600">{animal.age}</p>
                 </div>
               </div>
 
               <div>
                 <span className="font-medium text-gray-700">Tutor:</span>
-                <p className="text-gray-600">{animal.nomeTutor}</p>
+                <p className="text-gray-600">{animal.ownerName}</p>
               </div>
 
               <div>
                 <span className="font-medium text-gray-700">
                   Tratamento para:
                 </span>
-                <p className="text-gray-600 mt-1">{animal.tratamentoPara}</p>
+                <p className="text-gray-600 mt-1">{animal.treatmentFor}</p>
               </div>
 
               <div>
                 <span className="font-medium text-gray-700">Tratamento:</span>
-                <p className="text-gray-600 mt-1">{animal.tratamento}</p>
+                <p className="text-gray-600 mt-1">{animal.treatment}</p>
               </div>
 
               <HealthStatus
                 data={{
                   fiv: (animal as any).fiv || false,
                   felv: (animal as any).felv || false,
-                  raiva: (animal as any).raiva || false,
+                  rabies: (animal as any).rabies || false,
                   v6: (animal as any).v6 || false,
                 }}
                 editMode={false}
@@ -356,17 +356,17 @@ export function AnimalDetails({ animalId, onBack }: AnimalDetailsProps) {
                 <div key={medication._id} className="border rounded-lg p-4">
                   <div className="flex justify-between items-start mb-2">
                     <div className="text-sm text-gray-600">
-                      {medication.data} às {medication.horario}
+                      {medication.date} às {medication.time}
                     </div>
                     <div className="flex items-center gap-2">
                       <span
                         className={`px-2 py-1 text-xs font-medium rounded-full ${
-                          medication.administrado
+                          medication.administered
                             ? 'bg-green-100 text-green-800'
                             : 'bg-red-100 text-red-800'
                         }`}
                       >
-                        {medication.administrado ? 'Administrada' : 'Pendente'}
+                        {medication.administered ? 'Administrada' : 'Pendente'}
                       </span>
                       <button
                         onClick={() => handleDeleteMedication(medication._id)}
@@ -379,16 +379,16 @@ export function AnimalDetails({ animalId, onBack }: AnimalDetailsProps) {
                   <div className="space-y-1 text-sm">
                     <p>
                       <span className="font-medium">Medicamento:</span>{' '}
-                      {medication.medicamento}
+                      {medication.medication}
                     </p>
                     <p>
                       <span className="font-medium">Dose:</span>{' '}
                       {medication.dose}
                     </p>
-                    {medication.observacoes && (
+                    {medication.observations && (
                       <p>
                         <span className="font-medium">Observações:</span>{' '}
-                        {medication.observacoes}
+                        {medication.observations}
                       </p>
                     )}
                   </div>
@@ -415,7 +415,7 @@ export function AnimalDetails({ animalId, onBack }: AnimalDetailsProps) {
               </div>
               <AddMedicationForm
                 animalId={animalId}
-                animalName={animal.nome}
+                animalName={animal.name}
                 onSuccess={() => setShowAddMedication(false)}
               />
             </div>

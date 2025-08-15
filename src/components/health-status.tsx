@@ -2,7 +2,7 @@ interface HealthStatusProps {
   data: {
     fiv: boolean
     felv: boolean
-    raiva: boolean
+    rabies: boolean
     v6: boolean
   }
   editMode?: boolean
@@ -50,13 +50,13 @@ export function HealthStatus({ data, editMode = false, onChange }: HealthStatusP
             <div className="flex items-center">
               <input
                 type="checkbox"
-                id="raiva"
-                name="raiva"
-                checked={data.raiva}
+                id="rabies"
+                name="rabies"
+                checked={data.rabies}
                 onChange={onChange}
                 className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
-              <label htmlFor="raiva" className="text-sm font-medium text-gray-700">
+              <label htmlFor="rabies" className="text-sm font-medium text-gray-700">
                 Raiva
               </label>
             </div>
@@ -110,11 +110,11 @@ export function HealthStatus({ data, editMode = false, onChange }: HealthStatusP
           <div>
             <span className="font-medium text-gray-700">Raiva:</span>
             <p className={`text-sm font-medium ${
-              data.raiva 
+              data.rabies 
                 ? 'text-green-600' 
                 : 'text-red-600'
             }`}>
-              {data.raiva ? 'Sim' : 'Não'}
+              {data.rabies ? 'Sim' : 'Não'}
             </p>
           </div>
           <div>

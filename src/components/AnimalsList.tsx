@@ -2,23 +2,23 @@ import { Id } from "../../convex/_generated/dataModel";
 import { HealthStatus } from "./health-status";
 
 interface Animal {
-  _id: Id<"animals">;
-  nome: string;
-  sexo: "Macho" | "Fêmea";
-  pelagem: string;
-  idade: string;
-  nomeTutor: string;
-  tratamentoPara: string;
-  tratamento: string;
+  _id: Id<"animalsEn">;
+  name: string;
+  sex: "Macho" | "Femea";
+  coat: string;
+  age: string;
+  ownerName: string;
+  treatmentFor: string;
+  treatment: string;
   fiv?: boolean;
   felv?: boolean;
-  raiva?: boolean;
+  rabies?: boolean;
   v6?: boolean;
 }
 
 interface AnimalsListProps {
   animals: Animal[];
-  onViewAnimal: (animalId: Id<"animals">) => void;
+  onViewAnimal: (animalId: Id<"animalsEn">) => void;
 }
 
 export function AnimalsList({ animals, onViewAnimal }: AnimalsListProps) {
@@ -39,26 +39,26 @@ export function AnimalsList({ animals, onViewAnimal }: AnimalsListProps) {
           {animals.map((animal) => (
             <div key={animal._id} className="bg-white rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow">
               <div className="flex justify-between items-start mb-4">
-                <h3 className="text-xl font-semibold text-gray-900">{animal.nome}</h3>
+                <h3 className="text-xl font-semibold text-gray-900">{animal.name}</h3>
                 <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                  animal.sexo === "Macho" 
+                  animal.sex === "Macho" 
                     ? "bg-blue-100 text-blue-800" 
                     : "bg-pink-100 text-pink-800"
                 }`}>
-                  {animal.sexo}
+                  {animal.sex}
                 </span>
               </div>
               
               <div className="space-y-2 text-sm text-gray-600 mb-4">
-                <p><span className="font-medium">Pelagem:</span> {animal.pelagem}</p>
-                <p><span className="font-medium">Idade:</span> {animal.idade}</p>
-                <p><span className="font-medium">Tutor:</span> {animal.nomeTutor}</p>
-                <p><span className="font-medium">Tratamento para:</span> {animal.tratamentoPara}</p>
+                <p><span className="font-medium">Pelagem:</span> {animal.coat}</p>
+                <p><span className="font-medium">Idade:</span> {animal.age}</p>
+                <p><span className="font-medium">Tutor:</span> {animal.ownerName}</p>
+                <p><span className="font-medium">Tratamento para:</span> {animal.treatmentFor}</p>
               </div>
 
               <div className="mb-4">
                 <p className="text-sm font-medium text-gray-700 mb-1">Tratamento:</p>
-                <p className="text-sm text-gray-600 line-clamp-3">{animal.tratamento}</p>
+                <p className="text-sm text-gray-600 line-clamp-3">{animal.treatment}</p>
               </div>
 
               <div className="mb-4">
@@ -66,7 +66,7 @@ export function AnimalsList({ animals, onViewAnimal }: AnimalsListProps) {
                   data={{
                     fiv: animal.fiv || false,
                     felv: animal.felv || false,
-                    raiva: animal.raiva || false,
+                    rabies: animal.rabies || false,
                     v6: animal.v6 || false
                   }}
                   editMode={false}

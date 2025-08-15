@@ -10,16 +10,16 @@ interface AddAnimalFormProps {
 
 export function AddAnimalForm({ onSuccess }: AddAnimalFormProps) {
   const [formData, setFormData] = useState({
-    nome: '',
-    sexo: 'Macho' as 'Macho' | 'Fêmea',
-    pelagem: '',
-    idade: '',
-    nomeTutor: '',
-    tratamentoPara: '',
-    tratamento: '',
+    name: '',
+    sex: 'Macho' as 'Macho' | 'Femea',
+    coat: '',
+    age: '',
+    ownerName: '',
+    treatmentFor: '',
+    treatment: '',
     fiv: false,
     felv: false,
-    raiva: false,
+    rabies: false,
     v6: false,
   })
 
@@ -29,12 +29,12 @@ export function AddAnimalForm({ onSuccess }: AddAnimalFormProps) {
     e.preventDefault()
 
     if (
-      !formData.nome.trim() ||
-      !formData.pelagem.trim() ||
-      !formData.idade.trim() ||
-      !formData.nomeTutor.trim() ||
-      !formData.tratamentoPara.trim() ||
-      !formData.tratamento.trim()
+      !formData.name.trim() ||
+      !formData.coat.trim() ||
+      !formData.age.trim() ||
+      !formData.ownerName.trim() ||
+      !formData.treatmentFor.trim() ||
+      !formData.treatment.trim()
     ) {
       toast.error('Por favor, preencha todos os campos obrigatórios')
       return
@@ -44,16 +44,16 @@ export function AddAnimalForm({ onSuccess }: AddAnimalFormProps) {
       await addAnimal(formData)
       toast.success('Animal adicionado com sucesso!')
       setFormData({
-        nome: '',
-        sexo: 'Macho',
-        pelagem: '',
-        idade: '',
-        nomeTutor: '',
-        tratamentoPara: '',
-        tratamento: '',
+        name: '',
+        sex: 'Macho',
+        coat: '',
+        age: '',
+        ownerName: '',
+        treatmentFor: '',
+        treatment: '',
         fiv: false,
         felv: false,
-        raiva: false,
+        rabies: false,
         v6: false,
       })
       onSuccess()
@@ -86,16 +86,16 @@ export function AddAnimalForm({ onSuccess }: AddAnimalFormProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label
-                htmlFor="nome"
+                htmlFor="name"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
                 NOME *
               </label>
               <input
                 type="text"
-                id="nome"
-                name="nome"
-                value={formData.nome}
+                id="name"
+                name="name"
+                value={formData.name}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
@@ -104,36 +104,36 @@ export function AddAnimalForm({ onSuccess }: AddAnimalFormProps) {
 
             <div>
               <label
-                htmlFor="sexo"
+                htmlFor="sex"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
                 SEXO *
               </label>
               <select
-                id="sexo"
-                name="sexo"
-                value={formData.sexo}
+                id="sex"
+                name="sex"
+                value={formData.sex}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               >
                 <option value="Macho">Macho</option>
-                <option value="Fêmea">Fêmea</option>
+                <option value="Femea">Fêmea</option>
               </select>
             </div>
 
             <div>
               <label
-                htmlFor="pelagem"
+                htmlFor="coat"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
                 PELAGEM *
               </label>
               <input
                 type="text"
-                id="pelagem"
-                name="pelagem"
-                value={formData.pelagem}
+                id="coat"
+                name="coat"
+                value={formData.coat}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
@@ -142,16 +142,16 @@ export function AddAnimalForm({ onSuccess }: AddAnimalFormProps) {
 
             <div>
               <label
-                htmlFor="idade"
+                htmlFor="age"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
                 IDADE *
               </label>
               <input
                 type="text"
-                id="idade"
-                name="idade"
-                value={formData.idade}
+                id="age"
+                name="age"
+                value={formData.age}
                 onChange={handleChange}
                 placeholder="Ex: 2 anos, 6 meses"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -161,16 +161,16 @@ export function AddAnimalForm({ onSuccess }: AddAnimalFormProps) {
 
             <div className="md:col-span-2">
               <label
-                htmlFor="nomeTutor"
+                htmlFor="ownerName"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
                 NOME DO TUTOR *
               </label>
               <input
                 type="text"
-                id="nomeTutor"
-                name="nomeTutor"
-                value={formData.nomeTutor}
+                id="ownerName"
+                name="ownerName"
+                value={formData.ownerName}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
@@ -179,15 +179,15 @@ export function AddAnimalForm({ onSuccess }: AddAnimalFormProps) {
 
             <div className="md:col-span-2">
               <label
-                htmlFor="tratamentoPara"
+                htmlFor="treatmentFor"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
                 TRATAMENTO PARA *
               </label>
               <textarea
-                id="tratamentoPara"
-                name="tratamentoPara"
-                value={formData.tratamentoPara}
+                id="treatmentFor"
+                name="treatmentFor"
+                value={formData.treatmentFor}
                 onChange={handleChange}
                 rows={3}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -197,15 +197,15 @@ export function AddAnimalForm({ onSuccess }: AddAnimalFormProps) {
 
             <div className="md:col-span-2">
               <label
-                htmlFor="tratamento"
+                htmlFor="treatment"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
                 TRATAMENTO *
               </label>
               <textarea
-                id="tratamento"
-                name="tratamento"
-                value={formData.tratamento}
+                id="treatment"
+                name="treatment"
+                value={formData.treatment}
                 onChange={handleChange}
                 rows={4}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -219,7 +219,7 @@ export function AddAnimalForm({ onSuccess }: AddAnimalFormProps) {
                 data={{
                   fiv: formData.fiv,
                   felv: formData.felv,
-                  raiva: formData.raiva,
+                  rabies: formData.rabies,
                   v6: formData.v6
                 }}
                 editMode={true}

@@ -5,20 +5,20 @@ import { Id } from '../../convex/_generated/dataModel'
 import { toast } from 'sonner'
 
 interface AddMedicationFormProps {
-  animalId: Id<'animals'>
+  animalId: Id<'animalsEn'>
   animalName: string
   onSuccess: () => void
 }
 
 function defaultFormValues() {
   return {
-    data: new Date().toISOString().split('T')[0],
+    date: new Date().toISOString().split('T')[0],
     endDate: '',
-    horario: '',
-    medicamento: '',
+    time: '',
+    medication: '',
     dose: '',
     secondDoseTime: '',
-    observacoes: '',
+    observations: '',
   }
 }
 
@@ -37,8 +37,8 @@ export function AddMedicationForm({
     e.preventDefault()
 
     if (
-      !formData.horario.trim() ||
-      !formData.medicamento.trim() ||
+      !formData.time.trim() ||
+      !formData.medication.trim() ||
       !formData.dose.trim()
     ) {
       toast.error('Por favor, preencha todos os campos obrigatórios')
@@ -48,12 +48,12 @@ export function AddMedicationForm({
     try {
       const medicationRecord = {
         animalId,
-        data: formData.data,
+        date: formData.date,
         endDate: formData.endDate,
-        horario: formData.horario,
-        medicamento: formData.medicamento,
+        time: formData.time,
+        medication: formData.medication,
         dose: formData.dose,
-        observacoes: formData.observacoes || undefined,
+        observations: formData.observations || undefined,
       }
 
       if (formData.endDate) {
@@ -96,9 +96,9 @@ export function AddMedicationForm({
         </label>
         <input
           type="date"
-          id="data"
-          name="data"
-          value={formData.data}
+          id="date"
+          name="date"
+          value={formData.date}
           onChange={handleChange}
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           required
@@ -125,16 +125,16 @@ export function AddMedicationForm({
       <div className="flex gap-4">
         <div className="flex-1">
           <label
-            htmlFor="horario"
+            htmlFor="time"
             className="block text-sm font-medium text-gray-700 mb-1"
           >
             Horário da primeira dose *
           </label>
           <input
             type="time"
-            id="horario"
-            name="horario"
-            value={formData.horario}
+            id="time"
+            name="time"
+            value={formData.time}
             onChange={handleChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
@@ -160,16 +160,16 @@ export function AddMedicationForm({
 
       <div>
         <label
-          htmlFor="medicamento"
+          htmlFor="medication"
           className="block text-sm font-medium text-gray-700 mb-1"
         >
           Medicamento *
         </label>
         <input
           type="text"
-          id="medicamento"
-          name="medicamento"
-          value={formData.medicamento}
+          id="medication"
+          name="medication"
+          value={formData.medication}
           onChange={handleChange}
           placeholder="Nome do medicamento"
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -198,15 +198,15 @@ export function AddMedicationForm({
 
       <div>
         <label
-          htmlFor="observacoes"
+          htmlFor="observations"
           className="block text-sm font-medium text-gray-700 mb-1"
         >
           Observações
         </label>
         <textarea
-          id="observacoes"
-          name="observacoes"
-          value={formData.observacoes}
+          id="observations"
+          name="observations"
+          value={formData.observations}
           onChange={handleChange}
           rows={3}
           placeholder="Observações adicionais (opcional)"

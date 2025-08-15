@@ -4,12 +4,12 @@ import { getAuthUserId } from '@convex-dev/auth/server'
 
 export const addMedicationRecord = mutation({
   args: {
-    animalId: v.id('animals'),
-    data: v.string(),
-    horario: v.string(),
-    medicamento: v.string(),
+    animalId: v.id('animalsEn'),
+    date: v.string(),
+    time: v.string(),
+    medication: v.string(),
     dose: v.string(),
-    observacoes: v.optional(v.string()),
+    observations: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx)
@@ -18,26 +18,26 @@ export const addMedicationRecord = mutation({
     }
 
     const animal = await ctx.db.get(args.animalId)
-    if (!animal || !animal.ativo) {
+    if (!animal || !animal.active) {
       throw new Error('Animal não encontrado')
     }
 
-    return await ctx.db.insert('medicationRecords', {
+    return await ctx.db.insert('medicationRecordsEn', {
       ...args,
-      administrado: false,
+      administered: false,
     })
   },
 })
 
 export const addMultipleMedicationRecords = mutation({
   args: {
-    animalId: v.id('animals'),
-    data: v.string(),
+    animalId: v.id('animalsEn'),
+    date: v.string(),
     endDate: v.string(),
-    horario: v.string(),
-    medicamento: v.string(),
+    time: v.string(),
+    medication: v.string(),
     dose: v.string(),
-    observacoes: v.optional(v.string()),
+    observations: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx)
@@ -46,19 +46,19 @@ export const addMultipleMedicationRecords = mutation({
     }
 
     const animal = await ctx.db.get(args.animalId)
-    if (!animal || !animal.ativo) {
+    if (!animal || !animal.active) {
       throw new Error('Animal não encontrado')
     }
 
-    const startDate = new Date(args.data)
+    const startDate = new Date(args.date)
     const endDate = new Date(args.endDate)
 
     const currentDate = startDate
     while (currentDate <= endDate) {
-      await ctx.db.insert('medicationRecords', {
+      await ctx.db.insert('medicationRecordsEn', {
         ...args,
-        data: currentDate.toISOString().split('T')[0],
-        administrado: false,
+        date: currentDate.toISOString().split('T')[0],
+        administered: false,
       })
       currentDate.setDate(currentDate.getDate() + 1)
     }
@@ -68,7 +68,7 @@ export const addMultipleMedicationRecords = mutation({
 })
 
 export const getMedicationsByAnimal = query({
-  args: { animalId: v.id('animals') },
+  args: { animalId: v.id('animalsEn') },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx)
     if (!userId) {
@@ -76,12 +76,12 @@ export const getMedicationsByAnimal = query({
     }
 
     const animal = await ctx.db.get(args.animalId)
-    if (!animal || !animal.ativo) {
+    if (!animal || !animal.active) {
       return []
     }
 
     return await ctx.db
-      .query('medicationRecords')
+      .query('medicationRecordsEn')
       .withIndex('by_animal_and_date', (q) => q.eq('animalId', args.animalId))
       .order('desc')
       .collect()
@@ -97,14 +97,14 @@ export const getMedicationsByDate = query({
     }
 
     const medications = await ctx.db
-      .query('medicationRecords')
-      .withIndex('by_date', (q) => q.eq('data', args.date))
+      .query('medicationRecordsEn')
+      .withIndex('by_date', (q) => q.eq('date', args.date))
       .collect()
 
     // Get all active animals
     const allAnimals = await ctx.db
-      .query('animals')
-      .filter((q) => q.eq(q.field('ativo'), true))
+      .query('animalsEn')
+      .filter((q) => q.eq(q.field('active'), true))
       .collect()
 
     const animalMap = new Map(allAnimals.map((animal) => [animal._id, animal]))
@@ -121,15 +121,15 @@ export const getMedicationsByDate = query({
     }))
 
     return medicationsWithAnimals.sort((a, b) =>
-      a.horario.localeCompare(b.horario)
+      a.time.localeCompare(b.time)
     )
   },
 })
 
 export const markMedicationAsAdministered = mutation({
   args: {
-    id: v.id('medicationRecords'),
-    observacoes: v.optional(v.string()),
+    id: v.id('medicationRecordsEn'),
+    observations: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx)
@@ -144,20 +144,20 @@ export const markMedicationAsAdministered = mutation({
 
     // Verify the animal exists and is active
     const animal = await ctx.db.get(medication.animalId)
-    if (!animal || !animal.ativo) {
+    if (!animal || !animal.active) {
       throw new Error('Animal não encontrado')
     }
 
     await ctx.db.patch(args.id, {
-      administrado: true,
-      administradoPor: userId,
-      observacoes: args.observacoes,
+      administered: true,
+      administeredBy: userId,
+      observations: args.observations,
     })
   },
 })
 
 export const undoMedicationAdministration = mutation({
-  args: { id: v.id('medicationRecords') },
+  args: { id: v.id('medicationRecordsEn') },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx)
     if (!userId) {
@@ -170,20 +170,20 @@ export const undoMedicationAdministration = mutation({
     }
 
     const animal = await ctx.db.get(medication.animalId)
-    if (!animal || !animal.ativo) {
+    if (!animal || !animal.active) {
       throw new Error('Animal não encontrado')
     }
 
     await ctx.db.patch(args.id, {
-      administrado: false,
-      administradoPor: undefined,
-      observacoes: undefined,
+      administered: false,
+      administeredBy: undefined,
+      observations: undefined,
     })
   },
 })
 
 export const deleteMedication = mutation({
-  args: { id: v.id('medicationRecords') },
+  args: { id: v.id('medicationRecordsEn') },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx)
     if (!userId) {
@@ -196,7 +196,7 @@ export const deleteMedication = mutation({
     }
 
     const animal = await ctx.db.get(medication.animalId)
-    if (!animal || !animal.ativo) {
+    if (!animal || !animal.active) {
       throw new Error('Animal não encontrado')
     }
 
