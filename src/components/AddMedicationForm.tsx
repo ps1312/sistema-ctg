@@ -19,6 +19,7 @@ function defaultFormValues() {
     dose: '',
     secondDoseTime: '',
     observations: '',
+    createAsGroup: false,
   }
 }
 
@@ -46,6 +47,7 @@ export function AddMedicationForm({
     }
 
     try {
+      const groupId = formData.createAsGroup ? crypto.randomUUID() : undefined
       const medicationRecord = {
         animalId,
         date: formData.date,
@@ -54,12 +56,28 @@ export function AddMedicationForm({
         medication: formData.medication,
         dose: formData.dose,
         observations: formData.observations || undefined,
+        groupId,
       }
 
       if (formData.endDate) {
         await addMultipleMedicationRecords(medicationRecord)
       } else {
         await addMedicationRecord(medicationRecord)
+      }
+
+      // Add second dose if specified
+      if (formData.secondDoseTime) {
+        const secondDoseRecord = {
+          ...medicationRecord,
+          time: formData.secondDoseTime,
+          groupId,
+        }
+        
+        if (formData.endDate) {
+          await addMultipleMedicationRecords(secondDoseRecord)
+        } else {
+          await addMedicationRecord(secondDoseRecord)
+        }
       }
 
       toast.success('Medicação adicionada com sucesso!')
@@ -74,8 +92,9 @@ export function AddMedicationForm({
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    const { name, value, type } = e.target
+    const newValue = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
+    setFormData((prev) => ({ ...prev, [name]: newValue }))
   }
 
   return (
@@ -212,6 +231,23 @@ export function AddMedicationForm({
           placeholder="Observações adicionais (opcional)"
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
+      </div>
+
+      <div className="flex items-center">
+        <input
+          type="checkbox"
+          id="createAsGroup"
+          name="createAsGroup"
+          checked={formData.createAsGroup}
+          onChange={handleChange}
+          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+        />
+        <label
+          htmlFor="createAsGroup"
+          className="ml-2 text-sm font-medium text-gray-700"
+        >
+          Criar como grupo (facilita operações em lote)
+        </label>
       </div>
 
       <div className="flex gap-3 pt-4">

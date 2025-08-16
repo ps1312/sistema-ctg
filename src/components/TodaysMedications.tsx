@@ -4,6 +4,7 @@ import { api } from '../../convex/_generated/api'
 import { toast } from 'sonner'
 import { Id } from '../../convex/_generated/dataModel'
 import { useState, useEffect } from 'react'
+import { MedicationBatchManager } from './MedicationBatchManager'
 
 interface Medication {
   _id: Id<'medicationRecordsEn'>
@@ -77,6 +78,7 @@ export function TodaysMedications({
   const [collapsedSections, setCollapsedSections] = useState<
     Record<string, boolean>
   >({})
+  const [viewMode, setViewMode] = useState<'time' | 'batch'>('time')
 
   useEffect(() => {
     setCollapsedSections(getInitialCollapsedState())
@@ -176,14 +178,35 @@ export function TodaysMedications({
         <h2 className="text-2xl font-bold text-gray-900">
           Medicações para {selectedDate.toLocaleDateString('pt-BR')}
         </h2>
-        <div className="relative">
+        <div className="flex items-center gap-4">
+          <div className="flex bg-gray-100 rounded-lg p-1">
+            <button
+              onClick={() => setViewMode('time')}
+              className={`px-3 py-1 text-sm rounded ${
+                viewMode === 'time' 
+                  ? 'bg-white text-gray-900 shadow-sm' 
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Por horário
+            </button>
+            <button
+              onClick={() => setViewMode('batch')}
+              className={`px-3 py-1 text-sm rounded ${
+                viewMode === 'batch' 
+                  ? 'bg-white text-gray-900 shadow-sm' 
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Gerenciar lotes
+            </button>
+          </div>
           <input
             type="date"
             value={formatDate(selectedDate)}
             onChange={handleDateChange}
             className="px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          
         </div>
       </div>
 
@@ -196,6 +219,14 @@ export function TodaysMedications({
           <p className="text-gray-500 text-lg">
             Nenhuma medicação programada para esta data.
           </p>
+        </div>
+      ) : viewMode === 'batch' ? (
+        <div className="bg-white rounded-lg shadow-sm border p-6">
+          <MedicationBatchManager 
+            medications={medications} 
+            showAnimalName={true}
+            onMedicationUpdate={() => {}}
+          />
         </div>
       ) : (
         <div className="rounded-lg shadow-sm border">

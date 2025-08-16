@@ -61,9 +61,11 @@ const applicationTables = {
     administered: v.boolean(),
     observations: v.optional(v.string()),
     administeredBy: v.optional(v.id('users')),
+    groupId: v.optional(v.string()),
   })
     .index('by_animal_and_date', ['animalId', 'date'])
-    .index('by_date', ['date']),
+    .index('by_date', ['date'])
+    .index('by_group', ['groupId']),
 }
 
 export default defineSchema({

@@ -11,7 +11,7 @@ type View = "dashboard" | "add-animal" | "animals-list" | "animal-details";
 
 export function AnimalShelterApp() {
   const [currentView, setCurrentView] = useState<View>("dashboard");
-  const [selectedAnimalId, setSelectedAnimalId] = useState<Id<"animals"> | null>(null);
+  const [selectedAnimalId, setSelectedAnimalId] = useState<Id<"animalsEn"> | null>(null);
 
   const [selectedDate, setSelectedDate] = useState(new Date());
 
@@ -36,7 +36,7 @@ export function AnimalShelterApp() {
   const medicationsForDate = medicationsQueryResult || [];
   const isLoadingMedications = medicationsQueryResult === undefined;
 
-  const handleViewAnimal = (animalId: Id<"animals">) => {
+  const handleViewAnimal = (animalId: Id<"animalsEn">) => {
     setSelectedAnimalId(animalId);
     setCurrentView("animal-details");
   };
@@ -87,7 +87,7 @@ export function AnimalShelterApp() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-[90vw] xl:max-w-[95vw] 2xl:max-w-[1600px] mx-auto">
       <nav className="bg-white border-b mb-6">
         <div className="px-4 py-3">
           <div className="flex justify-between items-center">

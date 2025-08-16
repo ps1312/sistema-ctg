@@ -10,6 +10,7 @@ export const addMedicationRecord = mutation({
     medication: v.string(),
     dose: v.string(),
     observations: v.optional(v.string()),
+    groupId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx)
@@ -38,6 +39,7 @@ export const addMultipleMedicationRecords = mutation({
     medication: v.string(),
     dose: v.string(),
     observations: v.optional(v.string()),
+    groupId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx)
@@ -201,5 +203,182 @@ export const deleteMedication = mutation({
     }
 
     await ctx.db.delete(args.id)
+  },
+})
+
+export const getMedicationsByGroup = query({
+  args: { groupId: v.string() },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx)
+    if (!userId) {
+      return []
+    }
+
+    const medications = await ctx.db
+      .query('medicationRecordsEn')
+      .withIndex('by_group', (q) => q.eq('groupId', args.groupId))
+      .collect()
+
+    // Get all active animals
+    const allAnimals = await ctx.db
+      .query('animalsEn')
+      .filter((q) => q.eq(q.field('active'), true))
+      .collect()
+
+    const animalMap = new Map(allAnimals.map((animal) => [animal._id, animal]))
+
+    // Filter medications for active animals only
+    const activeMedications = medications.filter((med) =>
+      animalMap.has(med.animalId)
+    )
+
+    // Get animal details for each medication
+    const medicationsWithAnimals = activeMedications.map((med) => ({
+      ...med,
+      animal: animalMap.get(med.animalId) || null,
+    }))
+
+    return medicationsWithAnimals.sort((a, b) => {
+      const dateCompare = a.date.localeCompare(b.date)
+      if (dateCompare !== 0) return dateCompare
+      return a.time.localeCompare(b.time)
+    })
+  },
+})
+
+export const batchUpdateMedications = mutation({
+  args: {
+    medicationIds: v.array(v.id('medicationRecordsEn')),
+    updates: v.object({
+      medication: v.optional(v.string()),
+      dose: v.optional(v.string()),
+      time: v.optional(v.string()),
+      observations: v.optional(v.string()),
+    }),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx)
+    if (!userId) {
+      throw new Error('Usuário não autenticado')
+    }
+
+    // Verify all medications exist and user has access
+    for (const id of args.medicationIds) {
+      const medication = await ctx.db.get(id)
+      if (!medication) {
+        throw new Error('Uma ou mais medicações não foram encontradas')
+      }
+
+      const animal = await ctx.db.get(medication.animalId)
+      if (!animal || !animal.active) {
+        throw new Error('Animal não encontrado para uma das medicações')
+      }
+    }
+
+    // Perform batch update
+    const updatePromises = args.medicationIds.map((id) =>
+      ctx.db.patch(id, args.updates)
+    )
+
+    await Promise.all(updatePromises)
+    return { updated: args.medicationIds.length }
+  },
+})
+
+export const batchDeleteMedications = mutation({
+  args: {
+    medicationIds: v.array(v.id('medicationRecordsEn')),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx)
+    if (!userId) {
+      throw new Error('Usuário não autenticado')
+    }
+
+    // Verify all medications exist and user has access
+    for (const id of args.medicationIds) {
+      const medication = await ctx.db.get(id)
+      if (!medication) {
+        throw new Error('Uma ou mais medicações não foram encontradas')
+      }
+
+      const animal = await ctx.db.get(medication.animalId)
+      if (!animal || !animal.active) {
+        throw new Error('Animal não encontrado para uma das medicações')
+      }
+    }
+
+    // Perform batch delete
+    const deletePromises = args.medicationIds.map((id) => ctx.db.delete(id))
+
+    await Promise.all(deletePromises)
+    return { deleted: args.medicationIds.length }
+  },
+})
+
+export const batchDeleteByGroup = mutation({
+  args: { groupId: v.string() },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx)
+    if (!userId) {
+      throw new Error('Usuário não autenticado')
+    }
+
+    const medications = await ctx.db
+      .query('medicationRecordsEn')
+      .withIndex('by_group', (q) => q.eq('groupId', args.groupId))
+      .collect()
+
+    // Verify access to all medications in the group
+    for (const medication of medications) {
+      const animal = await ctx.db.get(medication.animalId)
+      if (!animal || !animal.active) {
+        throw new Error('Acesso negado para uma das medicações no grupo')
+      }
+    }
+
+    // Delete all medications in the group
+    const deletePromises = medications.map((med) => ctx.db.delete(med._id))
+    await Promise.all(deletePromises)
+
+    return { deleted: medications.length }
+  },
+})
+
+export const batchMarkAsAdministered = mutation({
+  args: {
+    medicationIds: v.array(v.id('medicationRecordsEn')),
+    observations: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx)
+    if (!userId) {
+      throw new Error('Usuário não autenticado')
+    }
+
+    // Verify all medications exist and user has access
+    for (const id of args.medicationIds) {
+      const medication = await ctx.db.get(id)
+      if (!medication) {
+        throw new Error('Uma ou mais medicações não foram encontradas')
+      }
+
+      const animal = await ctx.db.get(medication.animalId)
+      if (!animal || !animal.active) {
+        throw new Error('Animal não encontrado para uma das medicações')
+      }
+    }
+
+    // Perform batch update
+    const updatePromises = args.medicationIds.map((id) =>
+      ctx.db.patch(id, {
+        administered: true,
+        administeredBy: userId,
+        observations: args.observations,
+      })
+    )
+
+    await Promise.all(updatePromises)
+    return { updated: args.medicationIds.length }
   },
 })
