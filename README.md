@@ -2,9 +2,14 @@
 
 A modern web application for managing animal shelters, built with React, TypeScript, and Convex. This system provides comprehensive tools for tracking animals, managing medical treatments, and monitoring medication schedules.
 
+## 🔗 Live Demo
+
+https://sistema-ctg.vercel.app/
+
 ## 🐾 Main Features
 
 ### Animal Management
+
 - **Animal Registration**: Add new animals with complete profiles including name, sex, coat description, age, and owner information
 - **Treatment Tracking**: Record treatment reasons and detailed treatment plans for each animal
 - **Health Status Monitoring**: Track vaccination status (FIV, FELV, Rabies, V6) and health conditions
@@ -12,6 +17,7 @@ A modern web application for managing animal shelters, built with React, TypeScr
 - **Detailed Animal Profiles**: Access comprehensive animal information and medical history
 
 ### Medication Management
+
 - **Medication Scheduling**: Schedule medications with specific dates, times, dosages, and observations
 - **Daily Medication Dashboard**: View all medications scheduled for any given day
 - **Treatment Administration**: Mark medications as administered with timestamp tracking
@@ -20,7 +26,8 @@ A modern web application for managing animal shelters, built with React, TypeScr
 - **Time-based Organization**: Medications grouped by administration time with progress indicators
 
 ### Dashboard & Analytics
-- **Real-time Statistics**: 
+
+- **Real-time Statistics**:
   - Total number of animals in the system
   - Daily medication count
   - Number of administered medications
@@ -29,6 +36,7 @@ A modern web application for managing animal shelters, built with React, TypeScr
 - **Collapsible Time Sections**: Automatically collapse past medication times to focus on current tasks
 
 ### User Interface
+
 - **Responsive Design**: Mobile-friendly interface that works on all devices
 - **Intuitive Navigation**: Clear navigation between dashboard, animal list, and forms
 - **Real-time Updates**: Live updates using Convex for immediate data synchronization
@@ -58,6 +66,7 @@ A modern web application for managing animal shelters, built with React, TypeScr
 ## 🏥 Data Models
 
 ### Animals
+
 - Basic information (name, sex, coat, age)
 - Owner details
 - Treatment information
@@ -65,6 +74,7 @@ A modern web application for managing animal shelters, built with React, TypeScr
 - User tracking for data ownership
 
 ### Medication Records
+
 - Animal association
 - Scheduling (date, time, end date)
 - Medication details (name, dose)
@@ -75,21 +85,27 @@ A modern web application for managing animal shelters, built with React, TypeScr
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - Node.js (latest LTS version)
 - npm or bun package manager
 
 ### Installation & Development
 
 1. Install dependencies:
+
    ```bash
    npm install
    ```
 
-2. Start the development server:
+2. Start the development servers (frontend + Convex backend):
+
    ```bash
    npm run dev
    ```
-   This runs both the frontend (Vite) and backend (Convex) in parallel.
+
+   - Opens the frontend at `http://localhost:5173`
+   - Starts a local Convex backend
+   - On first run, the Convex CLI may prompt you to sign in and will generate the required environment variables (e.g., `VITE_CONVEX_URL`) in `.env.local`
 
 3. Access the application at `http://localhost:5173`
 
@@ -127,14 +143,16 @@ sistema-ctg/
 
 ## 🔐 Authentication
 
-The system uses Convex Auth for secure user authentication, ensuring that:
-- Each user can only access their own data
+The system uses Convex Auth for secure user authentication, in the demo:
+
+- All data is shared by the users
 - All operations are properly authenticated
 - User sessions are managed securely
 
 ## 📱 User Experience
 
 The application is designed with animal shelter staff in mind, providing:
+
 - **Quick Access**: Fast navigation between frequently used features
 - **Clear Visual Feedback**: Color-coded status indicators and progress tracking
 - **Efficient Workflows**: Streamlined processes for daily medication administration
@@ -143,9 +161,10 @@ The application is designed with animal shelter staff in mind, providing:
 
 ## 🏥 Convex Deployment
 
-This project is connected to the Convex deployment named [`joyous-chicken-580`](https://dashboard.convex.dev/d/joyous-chicken-580).
+This project is connected to the a Convex deployment named.
 
 For more information about Convex development and deployment:
+
 - [Convex Documentation](https://docs.convex.dev/)
 - [Convex Auth Documentation](https://auth.convex.dev/)
 - [Hosting and Deployment Guide](https://docs.convex.dev/production/)
