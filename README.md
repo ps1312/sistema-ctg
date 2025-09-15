@@ -1,5 +1,9 @@
 # Sistema CTG - Animal Shelter Management System
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/74dd7f09-86d9-4347-9d7e-3a48a5771c60" width="256">
+</p>
+
 A modern web application for managing animal shelters, built with React, TypeScript, and Convex. This system provides comprehensive tools for tracking animals, managing medical treatments, and monitoring medication schedules.
 
 ## 🔗 Live Demo
