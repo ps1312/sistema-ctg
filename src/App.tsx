@@ -51,7 +51,7 @@ function Content() {
         <div className="max-w-md mx-auto mt-20">
           <div className="text-center">
             <img
-              src="/logo-3.svg"
+              src="/logo.svg"
               alt="Logo"
               className="h-52 w-52 mx-auto object-contain rounded-md mb-16"
               loading="eager"
